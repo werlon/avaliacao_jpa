@@ -59,8 +59,8 @@ __@ManyToMany__
 
 __@OneToOne__
 > * Usada para mapear um relacionamento de um-para-um
-> * 		->mappedBy –usado para mapear um relacionamentos bi-direcionais; é usado no lado fracodo relacionamento; o atributo recebe uma Stringcom o nome do objeto no lado forte
-> * 		->orphanRemoval –excluir ou não registros lixo após desfazer um relacionamento
+> *		mappedBy: usado para mapear um relacionamentos bi-direcionais; é usado no lado fracodo relacionamento; o atributo recebe uma Stringcom o nome do objeto no lado forte
+> *		orphanRemoval: excluir ou não registros lixo após desfazer um relacionamento
  
 __@JoinColumn__
 > * Usada para especificar detalhes sobre a coluna da Foreign Key (Usado com outros acima)
@@ -181,21 +181,20 @@ Nas tabelas que possuem relacionamentos os valores indicam se o relacionamento s
 Utilizado quando quero alterar ou excluir muitos registros em uma unica execução.
 chamo o EntityManager crio a query com o método createQuery() e executo o metodo executeUpdate();
 Exemplo:
-	@AfterClass
-	public static void deveLimparBase(){
+
+>	@AfterClass
+
+	public static void deveLimparBase() {
+	
 		EntityManager entityManager = JPAUtil.INSTANCE.getEntityManager();
-	
 		entityManager.getTransaction().begin();
-		
 		Query query = entityManager.createQuery("DELETE FROM Produto p");
-		
 		int registrosExcluidos = query.executeUpdate();
-		
 		entityManager.getTransaction().commit();
-		
 		assertTrue("Deve ter excluido registros", registrosExcluidos > 0);
-		
-	}
 	
+	}
+
+
 ### 11- Qual a explicação para a exception LazyInitializationException?
 É uma Exception disparada sempre que se tenta buscar uma Entidade/Objeto que não está dentro do escopo do EntityManager.
