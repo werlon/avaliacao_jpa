@@ -3,9 +3,9 @@
 
 ### 1- Qual a responsabilidade/objeto das anotações:
 
-__@MappedSuperclass__
-* Anotação usada para mapear classes que serão herdadas por entidades
-* Define que essa classe foi mapeada como classe padrão para todas as outras
+* __@MappedSuperclass__
+Anotação usada para mapear classes que serão herdadas por entidades
+Define que essa classe foi mapeada como classe padrão para todas as outras
  
 @Version
  Anotação usada para mapear atributo de versionamento (Optimistic Locking)
