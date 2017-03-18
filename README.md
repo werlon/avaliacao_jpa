@@ -59,8 +59,8 @@ __@ManyToMany__
 
 __@OneToOne__
 > * Usada para mapear um relacionamento de um-para-um
-->mappedBy –usado para mapear um relacionamentos bi-direcionais; é usado no lado fracodo relacionamento; o atributo recebe uma Stringcom o nome do objeto no lado forte
-->orphanRemoval –excluir ou não registros lixo após desfazer um relacionamento
+> * 		->mappedBy –usado para mapear um relacionamentos bi-direcionais; é usado no lado fracodo relacionamento; o atributo recebe uma Stringcom o nome do objeto no lado forte
+> * 		->orphanRemoval –excluir ou não registros lixo após desfazer um relacionamento
  
 __@JoinColumn__
 > * Usada para especificar detalhes sobre a coluna da Foreign Key (Usado com outros acima)
