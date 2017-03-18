@@ -48,7 +48,7 @@ __@Temporal__
 __@ManyToOne__
 > * Usada para mapear um relacionamento de muitos-para-um
 > * Pode-se especificar os atributos:
-->fetch–diz se o relacionamento será ou não carregado após consulta da entidade
+`<addr>`->fetch–diz se o relacionamento será ou não carregado após consulta da entidade
 ->cascade–diz se o relacionamento sofrerá as mesmas ações de persistência que a entidade
 ->option–diz se a respectiva coluna do relacionado é definida como NULLou NOT NULL
 ->targetEntity –especifica a classe da entidade em caso de mapear uma classe mais genérica
