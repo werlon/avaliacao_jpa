@@ -162,7 +162,7 @@ Para fechar uma transação deve pegar a instancia ativa do EntityManager e cham
 	}
 
 ### 7- Como criar e executar uma query com JPQL?
-	O JPQL facilita a criação das querys utilizando o metodo createQuery() do EntityManager sendo possível criar consultas informando o Objeto que se  quer o resultado
+O JPQL facilita a criação das querys utilizando o metodo createQuery() do EntityManager sendo possível criar consultas informando o Objeto que se  quer o resultado
 #### 7.1 Dê exemplo do código
 	TypedQuery<Produto> query = em.createQuery(" SELECT p FROM Produto p", Produto.class).setMaxResults(1);
 	Produto produto = query.getSingleResult();
