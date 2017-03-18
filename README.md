@@ -48,10 +48,10 @@ __@Temporal__
 __@ManyToOne__
 > * Usada para mapear um relacionamento de muitos-para-um
 > * Pode-se especificar os atributos:
- __fetch__ diz se o relacionamento será ou não carregado após consulta da entidade
- __cascade__ –diz se o relacionamento sofrerá as mesmas ações de persistência que a entidade
- __option__ –diz se a respectiva coluna do relacionado é definida como NULLou NOT NULL
- __targetEntity__ –especifica a classe da entidade em caso de mapear uma classe mais genérica
+> * 		fetch: diz se o relacionamento será ou não carregado após consulta da entidade
+> * 		cascade: diz se o relacionamento sofrerá as mesmas ações de persistência que a entidade
+> * 		option: diz se a respectiva coluna do relacionado é definida como NULLou NOT NULL
+> * 		targetEntity: especifica a classe da entidade em caso de mapear uma classe mais genérica
 
 __@ManyToMany__
 > * Usada para mapear um relacionamento de muitos-para-muitos
@@ -70,10 +70,10 @@ __@JoinColumn__
 __@JoinTable__
 > * Usada para detalhar a tabela de junção dos relacionamentos @*ToMany
 > * Possui os atributos da anotação @Table Mais os atributos
-->foreignKey–especifica o nome da constraint FK de um dos lados do relacionamento
-->inverseForeignKey–nome da constraint FK do outro lado do relacionamento
-->joinColumns–mapear detalhes da coluna da FKde um dos lados do relacionamento
-->inverseJoinColumns–mapear detalhes da coluna da FKdo outro lado do relacionamento
+> * 		foreignKey: especifica o nome da constraint FK de um dos lados do relacionamento
+> * 		inverseForeignKey: nome da constraint FK do outro lado do relacionamento
+> * 		joinColumns: mapear detalhes da coluna da FKde um dos lados do relacionamento
+> * 		inverseJoinColumns: mapear detalhes da coluna da FKdo outro lado do relacionamento
 > * @ManyToMany(fetch = FetchType.LAZY,cascade = {CascadeType.PERSIST}, )
 > * @JoinTable(nome = "nome_outra_tabela",
 > * 		joinColumns = @JoinColumn(name="id_segunda_coluna_outra_tabela"),
