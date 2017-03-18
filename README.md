@@ -3,7 +3,7 @@
 
 ### 1- Qual a responsabilidade/objeto das anotações:
 
-@MappedSuperclass
+__@MappedSuperclass__
 * Anotação usada para mapear classes que serão herdadas por entidades
 * Define que essa classe foi mapeada como classe padrão para todas as outras
  
