@@ -1,7 +1,7 @@
 # Avaliacao JPA
 ## Trabalho de avaliação do módulo JPA pós graduação Fullstack Faculdade Delta 2017/2018
 
-1- Qual a responsabilidade/objeto das anotações:
+### 1- Qual a responsabilidade/objeto das anotações:
 
 @MappedSuperclass
  Anotação usada para mapear classes que serão herdadas por entidades
@@ -43,7 +43,7 @@
  Para definir colunas do tipo data(date), hora(time), datahora(datetime), timestamp
  
  
-2- Qual a responsabilidade/objeto das anotações:
+### 2- Qual a responsabilidade/objeto das anotações:
 
 @ManyToOne
  Usada para mapear um relacionamento de muitos-para-um
@@ -80,7 +80,7 @@
 		joinColumns = @JoinColumn(name="id_segunda_coluna_outra_tabela"),
 		inverseJoinColumns = @JoinColumn(name="id_primeira_coluna_outra_tabela_ligado_nesta"))
 
-3- Qual a responsabilidade/objeto dos métodos do EntityManager:
+### 3- Qual a responsabilidade/objeto dos métodos do EntityManager:
 isOpen
  Verificar se o EntityManager foi iniciado
  
@@ -102,13 +102,13 @@ persist
 remove
  Remove um objeto inteiro do escopo do EntityManager
  
-4- Como instânciar Criteria do Hibernate através do EntityManager?
+### 4- Como instânciar Criteria do Hibernate através do EntityManager?
 	Antes de instanciar, deve mudar a versão do hibernate, alterar a dependencia no pom.xml
 	a versão não deve ser superior a 5.1, assim usamos 5.1.0.Final pois Criteria foi depreciado nas versões posteriores
 	Crie um metodo que retorna um Session do Hibernate, crie outro método que retorna  o proprio Criteria.
 	O Session é um Session do EntityManager conforme codigo de exemplo abaixo. A Session é uma fábrica para intancias de Criteria.
 	
-4.1 Dê exemplo do código
+#### 4.1 Dê exemplo do código
 	private EntityManager em;
 	
 	
@@ -128,9 +128,9 @@ remove
 	Criteria criteria = createCriteria(SuaClasse.class,"alias");
 
 
-5- Como abrir uma transação?
+### 5- Como abrir uma transação?
 	Para abrir uma transação deve pegar a instancia ativa do EntityManager e chamar o método getTransation().begin();
-5.1 Dê exemplo do código
+#### 5.1 Dê exemplo do código
 
 	private void criarProdutos(int quantidade){
 		em.getTransaction().begin();
@@ -144,10 +144,10 @@ remove
 		em.getTransaction().commit();
 	}
 
-6- Como fechar uma transação?
+### 6- Como fechar uma transação?
 	Para fechar uma transação deve pegar a instancia ativa do EntityManager e chamar o método getTransation().commit() ou callback();
 	Se chamar o commit() confirma as açoes solicitadas. se chamar calback() desfaz as ações solicitadas.
-6.1 Dê exemplo do código
+#### 6.1 Dê exemplo do código
 
 	private void criarClientes(int quantidade){
 		em.getTransaction().begin();
@@ -163,23 +163,23 @@ remove
 		em.getTransaction().commit();
 	}
 
-7- Como criar e executar uma query com JPQL?
+### 7- Como criar e executar uma query com JPQL?
 	O JPQL facilita a criação das querys utilizando o metodo createQuery() do EntityManager sendo possível criar consultas informando o Objeto que se  quer o resultado
-7.1 Dê exemplo do código
+#### 7.1 Dê exemplo do código
 	TypedQuery<Produto> query = em.createQuery(" SELECT p FROM Produto p", Produto.class).setMaxResults(1);
 	Produto produto = query.getSingleResult();
 
-8- Qual a responsabilidade dos valores FetchType.LAZY e FetchType.EAGER?
+### 8- Qual a responsabilidade dos valores FetchType.LAZY e FetchType.EAGER?
 	Nas tabelas que possuem relacionamentos os valores indicam se o relacionamento será ou não carregado após consulta da entidade.
 	FetchType.LAZY só carrega o relacionamento quando for solicitado
 	FetchType.EAGER sempre carrega o relacionamento
 
-9- Qual a responsabilidade dos valores CascadeType.PERSIST e CascadeType.REMOVE?
+### 9- Qual a responsabilidade dos valores CascadeType.PERSIST e CascadeType.REMOVE?
 	Nas tabelas que possuem relacionamentos os valores indicam se o relacionamento sofrerá as mesmas ações de persistência que a entidade.
 	CascadeType.PERSIST indica que quando persistir ou alterar o objeto principal os objetos relacionados devem ser persistidos também
 	CascadeType.REMOVE indica que quando persistir,alterar ou remover o objeto principal os objetos relacionados devem ser removidos.
 
-10- Como fazer uma operação BATCH (DELETE ou UPDATE) através do EntityManager?
+### 10- Como fazer uma operação BATCH (DELETE ou UPDATE) através do EntityManager?
 	Utilizado quando quero alterar ou excluir muitos registros em uma unica execução.
 	chamo o EntityManager crio a query com o método createQuery() e executo o metodo executeUpdate();
 	Exemplo:
@@ -199,7 +199,5 @@ remove
 		
 	}
 	
-11- Qual a explicação para a exception LazyInitializationException?
+### 11- Qual a explicação para a exception LazyInitializationException?
 	É uma Exception disparada sempre que se tenta buscar uma Entidade/Objeto que não está dentro do escopo do EntityManager.
-	
-	-> mandar no slack o link do trabalho pronto
