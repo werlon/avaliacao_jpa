@@ -1,4 +1,4 @@
-# Avaliacao JPA
+# Avaliação JPA
 ## Trabalho de avaliação do módulo JPA pós graduação Fullstack Faculdade Delta 2017/2018
 
 ### 1- Qual a responsabilidade/objeto das anotações:
