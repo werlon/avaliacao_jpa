@@ -14,26 +14,40 @@ import br.edu.faculdadedelta.util.JPAUtil;
 
 public class AlunoTest {
 	
+	private static final String CPF_PADRAO = "000.001.002-03";
 	private EntityManager em;
 	
 	@Test 
 	public void deveSalvarAluno(){
+		Aluno aluno = new Aluno();
+		aluno.setNome("Werlon Guilherme");
+		aluno.setCpf(CPF_PADRAO);
 		
+		assertTrue("Não deve ter id definido",aluno.isTransient());
+		
+		em.getTransaction().begin();
+		
+		em.persist(aluno);
+		
+		em.getTransaction().commit();
+		
+		assertFalse("Deve ter definido",aluno.isTransient());
+		assertNotNull("Deve ter id definido",aluno.getId());
 	}
 	
 	@Test 
 	public void devePesquisarAluno(){
-		
+		assertFalse("Retorna false",false);
 	}
 	
 	@Test 
 	public void deveAlterarAluno(){
-		
+		assertFalse("Retorna false",false);
 	}
 	
 	@Test 
 	public void deveRemoverAluno(){
-		
+		assertFalse("Retorna false",false);
 	}
 	
 	@Before
