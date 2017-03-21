@@ -105,6 +105,23 @@ public class MateriaTest {
 		assertEquals("Quantidade de alunos deve ser igual a quantidade da lista", qtdAlunosTurma.intValue(), qtdAluno);
 	}
 	
+	@Test(expected = IllegalStateException.class)
+	public void naoPodeFazerMergeEmMateriaQueNaoFoiPersistida(){
+		Materia materia = prepararMateria();	
+		
+		materia.getAlunos().add(prepararAluno("Werlon Guilherme", "001.456.789-00", JPAUtilTest.getTipoDate("14/03/1980"), 31));
+		materia.getAlunos().add(prepararAluno("Werlon Borges", "002.456.789-00", JPAUtilTest.getTipoDate("15/03/1980"), 32));
+		materia.getAlunos().add(prepararAluno("Werlon Silva", "003.456.789-00", JPAUtilTest.getTipoDate("16/03/1980"), 33));
+		
+		assertTrue("Não deve ter id definido",materia.isTransient());
+		
+		em.getTransaction().begin();
+		materia = em.merge(materia);
+		em.getTransaction().commit();
+		
+		fail("Não deveria ter salvo (merge) uma materia nova com relacionamentos transient");
+	}
+	
 	@Test 
 	public void deveSalvarMateria(){
 		assertFalse("retorno falso",false);
