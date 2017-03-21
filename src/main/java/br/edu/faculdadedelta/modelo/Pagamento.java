@@ -2,6 +2,7 @@ package br.edu.faculdadedelta.modelo;
 
 import java.util.Date;
 
+import javax.persistence.Basic;
 import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.FetchType;
@@ -30,6 +31,7 @@ public class Pagamento extends BaseEntity<Long> {
 	
 	@Temporal(TemporalType.TIMESTAMP)
 	@Column(name="data_hora",nullable = false)
+	@Basic(fetch = FetchType.LAZY)
 	private Date dataHora;
 	
 	@ManyToOne(fetch = FetchType.LAZY)

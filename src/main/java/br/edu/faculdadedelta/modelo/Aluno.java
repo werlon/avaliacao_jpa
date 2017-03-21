@@ -2,8 +2,10 @@ package br.edu.faculdadedelta.modelo;
 
 import java.util.Date;
 
+import javax.persistence.Basic;
 import javax.persistence.Column;
 import javax.persistence.Entity;
+import javax.persistence.FetchType;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
@@ -35,7 +37,8 @@ public class Aluno extends BaseEntity<Long> {
 	private int idade;
 	
 	@Temporal(TemporalType.DATE)
-	@Column(name = "data_nascimento", nullable = false)
+	@Column(name = "data_nascimento", nullable = true)
+	@Basic(fetch = FetchType.LAZY)
 	private Date dataNascimento;
 	
 

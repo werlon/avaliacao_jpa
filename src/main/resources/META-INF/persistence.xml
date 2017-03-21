@@ -7,7 +7,12 @@
 	<persistence-unit name="AvaliacaoJPA" transaction-type="RESOURCE_LOCAL">
 
 		<provider>org.hibernate.jpa.HibernatePersistenceProvider</provider>
+		<class>br.edu.faculdadedelta.modelo.Aluno</class>
+		<class>br.edu.faculdadedelta.modelo.Professor</class>
+		<class>br.edu.faculdadedelta.modelo.Materia</class>
+		<class>br.edu.faculdadedelta.modelo.Pagamento</class>
 
+		
 		<properties>
 			<property name="javax.persistence.jdbc.url" value="jdbc:h2:mem:jpadelta" />
 			<property name="javax.persistence.jdbc.user" value="sa" />

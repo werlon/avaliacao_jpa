@@ -2,8 +2,11 @@ package br.edu.faculdadedelta.modelo;
 
 import static org.junit.Assert.*;
 
+import java.util.List;
+
 import javax.persistence.EntityManager;
 import javax.persistence.Query;
+import javax.persistence.TypedQuery;
 
 import org.junit.After;
 import org.junit.AfterClass;
@@ -22,6 +25,8 @@ public class AlunoTest {
 		Aluno aluno = new Aluno();
 		aluno.setNome("Werlon Guilherme");
 		aluno.setCpf(CPF_PADRAO);
+		aluno.setIdade(36);
+		aluno.setMatricula("MAT-000000001");
 		
 		assertTrue("Não deve ter id definido",aluno.isTransient());
 		
@@ -37,17 +42,56 @@ public class AlunoTest {
 	
 	@Test 
 	public void devePesquisarAluno(){
-		assertFalse("Retorna false",false);
+		for(int i = 0; i<10; i++){
+			deveSalvarAluno();
+		}
+		
+		TypedQuery<Aluno> query = em.createQuery(" SELECT a FROM Aluno a", Aluno.class);
+		List<Aluno> aluno = query.getResultList();
+		
+		assertFalse("Deve ter alunos na lista",aluno.isEmpty());
+		assertTrue("Deve ter alunos na lista",aluno.size() >= 10);
 	}
 	
 	@Test 
 	public void deveAlterarAluno(){
-		assertFalse("Retorna false",false);
+		deveSalvarAluno();
+		
+		TypedQuery<Aluno> query = em.createQuery(" SELECT a FROM Aluno a", Aluno.class).setMaxResults(1);
+		
+		Aluno aluno = query.getSingleResult();
+		
+		assertNotNull("Dever ter encontrado um aluno",aluno);
+		
+		Integer versao = aluno.getVersion();
+		
+		em.getTransaction().begin();
+		
+		aluno.setIdade(37);
+		aluno = em.merge(aluno);
+		em.getTransaction().commit();
+		
+		assertNotEquals("Versão deve ser diferente",versao, aluno.getVersion());
 	}
 	
 	@Test 
 	public void deveRemoverAluno(){
-		assertFalse("Retorna false",false);
+		deveSalvarAluno();
+		
+		TypedQuery<Long> query = em.createQuery(" SELECT MAX(a.id) FROM Aluno a",Long.class);
+		Long id = query.getSingleResult();
+		
+		em.getTransaction().begin();
+		
+		Aluno aluno = em.find(Aluno.class, id);
+
+		em.remove(aluno);
+		
+		em.getTransaction().commit();
+		
+		Aluno produtoExcluido = em.find(Aluno.class, id);
+		
+		assertNull("Não deve achar o aluno", produtoExcluido);
 	}
 	
 	@Before

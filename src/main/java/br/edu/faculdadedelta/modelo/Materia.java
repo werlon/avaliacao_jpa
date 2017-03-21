@@ -27,6 +27,7 @@ public class Materia extends BaseEntity<Long> {
 	@Column(name = "id_materia")
 	private Long id;
 	
+	@Column(nullable=false)
 	private String codigo;
 	
 	private String titulo;
