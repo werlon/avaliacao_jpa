@@ -94,6 +94,73 @@ public class AlunoTest {
 		assertNull("Não deve achar o aluno", produtoExcluido);
 	}
 	
+	@Test
+	public void deveBuscarAlunoPelaMatriculaJpql(){
+		deveSalvarAluno();
+		
+		StringBuilder jpql = new StringBuilder();
+		jpql.append(" SELECT COUNT(a.id) ");
+		jpql.append(" FROM Aluno a ");
+		jpql.append(" WHERE a.matricula = :matricula ");
+		
+		Query query = em.createQuery(jpql.toString());
+		query.setParameter("matricula", "MAT-000000001");
+		
+		Long qtdRegistros = (Long) query.getSingleResult();
+		
+		assertTrue("Quantidade de alunos deve ser maior que zero", qtdRegistros.intValue() > 0 );
+	
+	}
+	
+	@Test
+	public void deveBuscarAlunosPelaIdadeJpql(){
+		deveSalvarAluno();
+		
+		StringBuilder jpql = new StringBuilder();
+		jpql.append(" SELECT COUNT(a.id) ");
+		jpql.append(" FROM Aluno a ");
+		jpql.append(" WHERE a.idade >= :idade ");
+		
+		Query query = em.createQuery(jpql.toString());
+		query.setParameter("idade", 30);
+		
+		Long qtdRegistros = (Long) query.getSingleResult();
+		
+		assertTrue("Quantidade de alunos deve ser maior que zero", qtdRegistros.intValue() > 0 );
+		
+		query = em.createQuery(jpql.toString());
+		query.setParameter("idade", 60);
+		
+		qtdRegistros = (Long) query.getSingleResult();
+		
+		assertFalse("Quantidade de alunos não deve ser maior que zero", qtdRegistros.intValue() > 0 );
+		
+	}
+	
+	@Test
+	public void deveBuscarPorParteDoNomeJpql(){
+		deveSalvarAluno();
+		
+		StringBuilder jpql = new StringBuilder();
+		jpql.append(" SELECT COUNT(a.id) ");
+		jpql.append(" FROM Aluno a ");
+		jpql.append(" WHERE a.nome LIKE :nome ");
+		
+		Query query = em.createQuery(jpql.toString());
+		query.setParameter("nome", "%Guilherme%");
+		
+		Long qtdRegistros = (Long) query.getSingleResult();
+		
+		assertTrue("Quantidade de alunos deve ser maior que zero", qtdRegistros.intValue() > 0 );
+		
+		query = em.createQuery(jpql.toString());
+		query.setParameter("nome", "%Guimaraes%");
+		
+		qtdRegistros = (Long) query.getSingleResult();
+		
+		assertFalse("Quantidade de alunos não deve ser maior que zero", qtdRegistros.intValue() > 0 );
+	}
+	
 	@Before
 	public void instanciarEntityManager(){
 		em = JPAUtil.INSTANCE.getEntityManager();

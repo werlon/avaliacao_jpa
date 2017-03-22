@@ -169,13 +169,51 @@ public class PagamentoTest {
 		
 		Long qtdRegistros = (Long) query.getSingleResult();
 		
-		assertFalse("Quantidade de pagamentos deve ser menor que 5", qtdRegistros.intValue() < 5 );
-		assertEquals("Quantidade de pagamentos deve ser igual a quantidade da lista", qtdRegistros.intValue() , 5 );
+		assertFalse("Quantidade de pagamentos deve ser maior que cinco", qtdRegistros.intValue() < 5 );
 	}
 	
 	@Test
-	public void deveConsultarPagamentoPorMateria(){
-		deveSalvarPagamento();
+	public void deveConsultarPagamentoPorMateriaJpql(){
+		
+		Professor professor = new Professor();
+		professor.setNome("JOSE SILVA");
+		professor.setRegistro(JPAUtilTest.REGISTRO_PADRAO);
+		
+		Materia materia = new Materia();
+		materia.setCodigo(JPAUtilTest.CODIGO_PADRAO);
+		materia.setProfessor(professor);
+		materia.setTitulo("Matemática");
+		
+		em.getTransaction().begin();
+		em.persist(materia);
+		em.getTransaction().commit();
+		
+	
+		Pagamento pagamento = new Pagamento();
+		
+		pagamento.setValor(150.00);
+		pagamento.setDataHora(JPAUtilTest.getTipoDateTime("01/01/2017 08:00:00"));
+		pagamento.setProfessor(professor);
+			
+		assertTrue("Não deve ter id definido",pagamento.isTransient());
+			
+		em.getTransaction().begin();
+		em.persist(pagamento);
+		em.getTransaction().commit();
+			
+		StringBuilder jpql = new StringBuilder();
+		jpql.append(" SELECT COUNT(pg.id) ");
+		jpql.append(" FROM Pagamento pg ");
+		jpql.append(" INNER JOIN pg.professor p ");
+		jpql.append(" INNER JOIN p.materia m ");
+		jpql.append(" WHERE m.codigo = :codigo ");
+		
+		Query query = em.createQuery(jpql.toString());
+		query.setParameter("codigo", JPAUtilTest.CODIGO_PADRAO);
+		
+		Long qtdRegistros = (Long) query.getSingleResult();
+		
+		assertTrue("Quantidade de pagamentos encontrados deve ser maior que zero", qtdRegistros.intValue() > 0 );
 	}
 
 	@Before

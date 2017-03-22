@@ -25,7 +25,7 @@ public class ProfessorTest {
 		
 		Professor professor = new Professor();
 		
-		professor.setNome("Atilla Barros");
+		professor.setNome("Werlon Guilherme");
 		
 		professor.setRegistro(JPAUtilTest.REGISTRO_PADRAO);
 		
@@ -93,6 +93,78 @@ public class ProfessorTest {
 		Professor produtoExcluido = em.find(Professor.class, id);
 		
 		assertNull("Não deve achar o professor", produtoExcluido);
+	}
+	
+	@Test
+	public void deveBuscarProfessorPeloRegistroJpql(){
+		deveSalvarProfessor();
+		
+		StringBuilder jpql = new StringBuilder();
+		jpql.append(" SELECT COUNT(p.id) ");
+		jpql.append(" FROM Professor p ");
+		jpql.append(" WHERE p.registro = :registro ");
+		
+		Query query = em.createQuery(jpql.toString());
+		query.setParameter("registro", JPAUtilTest.REGISTRO_PADRAO);
+		
+		Long qtdRegistros = (Long) query.getSingleResult();
+		
+		assertTrue("Quantidade de professores deve ser maior que zero", qtdRegistros.intValue() > 0 );
+		
+		query = em.createQuery(jpql.toString());
+		query.setParameter("registro", "ABC001");
+		
+		qtdRegistros = (Long) query.getSingleResult();
+		
+		assertFalse("Quantidade de professores não deve ser maior que zero", qtdRegistros.intValue() > 0 );
+	}
+	
+	@Test
+	public void deveBuscarProfessorPorNomeCompletoJpql(){
+		deveSalvarProfessor();
+		
+		StringBuilder jpql = new StringBuilder();
+		jpql.append(" SELECT COUNT(p.id) ");
+		jpql.append(" FROM Professor p ");
+		jpql.append(" WHERE p.nome = :nome ");
+		
+		Query query = em.createQuery(jpql.toString());
+		query.setParameter("nome", "Werlon Guilherme");
+		
+		Long qtdRegistros = (Long) query.getSingleResult();
+		
+		assertTrue("Quantidade de professores deve ser maior que zero", qtdRegistros.intValue() > 0 );
+		
+		query = em.createQuery(jpql.toString());
+		query.setParameter("nome", "Guilherme");
+		
+		qtdRegistros = (Long) query.getSingleResult();
+		
+		assertFalse("Quantidade de professores não deve ser maior que zero", qtdRegistros.intValue() > 0 );
+	}
+	
+	@Test
+	public void deveBuscarProfessorPorParteDoNomeJpql(){
+		deveSalvarProfessor();
+		
+		StringBuilder jpql = new StringBuilder();
+		jpql.append(" SELECT COUNT(p.id) ");
+		jpql.append(" FROM Professor p ");
+		jpql.append(" WHERE p.nome LIKE :nome ");
+		
+		Query query = em.createQuery(jpql.toString());
+		query.setParameter("nome", "%Guilherme%");
+		
+		Long qtdRegistros = (Long) query.getSingleResult();
+		
+		assertTrue("Quantidade de professores deve ser maior que zero", qtdRegistros.intValue() > 0 );
+		
+		query = em.createQuery(jpql.toString());
+		query.setParameter("nome", "%Guimaraes%");
+		
+		qtdRegistros = (Long) query.getSingleResult();
+		
+		assertFalse("Quantidade de professores não deve ser maior que zero", qtdRegistros.intValue() > 0 );
 	}
 	
 	@Before
