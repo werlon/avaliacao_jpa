@@ -148,6 +148,8 @@ public class PagamentoTest {
 			pagamento.setDataHora(JPAUtilTest.getTipoDateTime("01/0"+i+"/2017 08:00:00"));
 			pagamento.setProfessor(preparaProfessor("PTB000"+i));
 			
+			System.out.println(pagamento.getDataHora().getTime());
+			
 			assertTrue("Não deve ter id definido",pagamento.isTransient());
 			
 			em.getTransaction().begin();
@@ -162,12 +164,12 @@ public class PagamentoTest {
 		jpql.append(" AND pg.dataHora <= :dataFinal ");
 		
 		Query query = em.createQuery(jpql.toString());
-		query.setParameter("dataInicial", JPAUtilTest.getTipoDateTime("10/11/2016 00:00:00"));
-		query.setParameter("dataFinal", JPAUtilTest.getTipoDateTime("10/03/2017 00:00:00"));
+		query.setParameter("dataInicial", JPAUtilTest.getTipoDateTime("10/01/2017 00:00:00"));
+		query.setParameter("dataFinal", JPAUtilTest.getTipoDateTime("10/02/2017 00:00:00"));
 		
 		Long qtdRegistros = (Long) query.getSingleResult();
 		
-		assertFalse("Quantidade de pagamentos deve ser igual a quantidade da lista", qtdRegistros.intValue() < 5 );
+		assertFalse("Quantidade de pagamentos deve ser menor que 5", qtdRegistros.intValue() < 5 );
 		assertEquals("Quantidade de pagamentos deve ser igual a quantidade da lista", qtdRegistros.intValue() , 5 );
 	}
 	
