@@ -14,10 +14,10 @@ import org.junit.Before;
 import org.junit.Test;
 
 import br.edu.faculdadedelta.util.JPAUtil;
+import br.edu.faculdadedelta.util.JPAUtilTest;
 
 public class ProfessorTest {
 	
-	private static final String REGISTRO_PADRAO = "A0001B";
 	private EntityManager em;
 	
 	@Test 
@@ -27,7 +27,7 @@ public class ProfessorTest {
 		
 		professor.setNome("Atilla Barros");
 		
-		professor.setRegistro(REGISTRO_PADRAO);
+		professor.setRegistro(JPAUtilTest.REGISTRO_PADRAO);
 		
 		assertTrue("Não deve ter id definido",professor.isTransient());
 		
@@ -62,7 +62,7 @@ public class ProfessorTest {
 		
 		Professor professor = query.getSingleResult();
 		
-		assertNotNull("Dever ter encontrado um aluno",professor);
+		assertNotNull("Dever ter encontrado um professor",professor);
 		
 		Integer versao = professor.getVersion();
 		

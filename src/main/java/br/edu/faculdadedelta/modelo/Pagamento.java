@@ -3,6 +3,7 @@ package br.edu.faculdadedelta.modelo;
 import java.util.Date;
 
 import javax.persistence.Basic;
+import javax.persistence.CascadeType;
 import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.FetchType;
@@ -34,7 +35,7 @@ public class Pagamento extends BaseEntity<Long> {
 	@Basic(fetch = FetchType.LAZY)
 	private Date dataHora;
 	
-	@ManyToOne(fetch = FetchType.LAZY)
+	@ManyToOne(cascade = { CascadeType.PERSIST },fetch = FetchType.LAZY)
     @JoinColumn(name = "id_professor")
 	private Professor professor;
 

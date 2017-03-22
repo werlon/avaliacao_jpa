@@ -6,6 +6,7 @@ import java.util.Date;
 
 import javax.persistence.EntityManager;
 import javax.persistence.Query;
+import javax.persistence.TypedQuery;
 
 import org.junit.After;
 import org.junit.AfterClass;
@@ -17,8 +18,6 @@ import br.edu.faculdadedelta.util.JPAUtilTest;
 
 public class MateriaTest {
 	
-	private static final String REGISTRO_PADRAO = "A0001B";
-	private static final String CODIGO_PADRAO = "PTG-001";
 	
 	private EntityManager em;
 	
@@ -38,13 +37,13 @@ public class MateriaTest {
 	
 	private Materia prepararMateria(String registro,String codigo){
 		Professor professor = new Professor();
-		professor.setNome("JOÃO "+(codigo==null?CODIGO_PADRAO:codigo));
-		professor.setRegistro(registro==null?REGISTRO_PADRAO:registro);
+		professor.setNome("JOÃO "+(codigo==null?JPAUtilTest.CODIGO_PADRAO:codigo));
+		professor.setRegistro(registro==null?JPAUtilTest.REGISTRO_PADRAO:registro);
 		
 		Materia materia = new Materia();
-		materia.setCodigo(codigo==null?CODIGO_PADRAO:codigo);
+		materia.setCodigo(codigo==null?JPAUtilTest.CODIGO_PADRAO:codigo);
 		materia.setProfessor(professor);
-		materia.setTitulo("Materia "+(registro==null?REGISTRO_PADRAO:registro));
+		materia.setTitulo("Materia "+(registro==null?JPAUtilTest.REGISTRO_PADRAO:registro));
 		
 		return materia;
 	}
@@ -53,10 +52,11 @@ public class MateriaTest {
 	public void deveSalvarMateriaComAlunosEProfessorPersistenciaCascata(){
 		Materia materia = prepararMateria();	
 		
-		materia.getAlunos().add(prepararAluno("Werlon Guilherme", "123.456.789-00", JPAUtilTest.getTipoDate("14/03/1980"), 36));
-		materia.getAlunos().add(prepararAluno("Marcella Ferreira", "111.456.789-01", JPAUtilTest.getTipoDate("06/04/1984"), 32));
-		materia.getAlunos().add(prepararAluno("Walder Filho", "222.456.789-02", JPAUtilTest.getTipoDate("28/05/1984"), 32));
-		materia.getAlunos().add(prepararAluno("Sue Ellen", "333.456.789-03", JPAUtilTest.getTipoDate("04/07/1982"), 34));
+		materia.getAlunos().add(prepararAluno("Werlon Guilherme", "123.456.789-00", JPAUtilTest.getTipoDate("14/03/1990"), 26));
+		materia.getAlunos().add(prepararAluno("Werlon Borges", "111.456.789-01", JPAUtilTest.getTipoDate("06/04/1984"), 32));
+		materia.getAlunos().add(prepararAluno("Werlon Silva", "222.456.789-02", JPAUtilTest.getTipoDate("28/05/1984"), 32));
+		materia.getAlunos().add(prepararAluno("Werlon Werlon", "333.456.789-03", JPAUtilTest.getTipoDate("04/07/1982"), 34));
+		materia.getAlunos().add(prepararAluno("Werlon Padrao", JPAUtilTest.CPF_PADRAO, JPAUtilTest.getTipoDate("14/03/1980"), 36));
 		
 		assertTrue("Não deve ter id definido",materia.isTransient());
 		
@@ -74,7 +74,7 @@ public class MateriaTest {
 	
 	@Test
 	public void deveConsultarQuantidadeAlunosNaMateria(){
-		Materia materia = prepararMateria(REGISTRO_PADRAO, "C0003B");
+		Materia materia = prepararMateria(JPAUtilTest.REGISTRO_PADRAO, "C0003B");
 		
 		for (int i = 0; i < 10; i++) {
 			materia.getAlunos().add(prepararAluno("Werlon Guilherme"+i, "123.456.789-00", JPAUtilTest.getTipoDate("14/03/1980"), 20+i));
@@ -98,7 +98,7 @@ public class MateriaTest {
 		jpql.append(" WHERE p.registro = :registro ");
 		
 		Query query = em.createQuery(jpql.toString());
-		query.setParameter("registro", REGISTRO_PADRAO);
+		query.setParameter("registro", JPAUtilTest.REGISTRO_PADRAO);
 		
 		Long qtdAlunosTurma = (Long) query.getSingleResult();
 		
@@ -122,24 +122,46 @@ public class MateriaTest {
 		fail("Não deveria ter salvo (merge) uma materia nova com relacionamentos transient");
 	}
 	
-	@Test 
-	public void deveSalvarMateria(){
-		assertFalse("retorno falso",false);
-	}
-	
-	@Test 
-	public void devePesquisarMateria(){
-		assertFalse("retorno falso",false);
-	}
 	
 	@Test 
 	public void deveAlterarMateria(){
-		assertFalse("retorno falso",false);
+		deveSalvarMateriaComAlunosEProfessorPersistenciaCascata();
+		
+		TypedQuery<Materia> query = em.createQuery(" SELECT m FROM Materia m", Materia.class).setMaxResults(1);
+		
+		Materia materia = query.getSingleResult();
+		
+		assertNotNull("Dever ter encontrado uma materia",materia);
+		
+		Integer versao = materia.getVersion();
+		
+		em.getTransaction().begin();
+		
+		materia.setTitulo("Novo Titulo");
+		materia = em.merge(materia);
+		em.getTransaction().commit();
+		
+		assertNotEquals("Versão deve ser diferente",versao, materia.getVersion());
 	}
 	
 	@Test 
 	public void deveRemoverMateria(){
-		assertFalse("retorno falso",false);
+		deveSalvarMateriaComAlunosEProfessorPersistenciaCascata();
+		
+		TypedQuery<Long> query = em.createQuery(" SELECT MAX(m.id) FROM Materia m",Long.class);
+		Long id = query.getSingleResult();
+		
+		em.getTransaction().begin();
+		
+		Materia materia = em.find(Materia.class, id);
+
+		em.remove(materia);
+		
+		em.getTransaction().commit();
+		
+		Materia materiaRemovida = em.find(Materia.class, id);
+		
+		assertNull("Não deve achar a matéria", materiaRemovida);
 	}
 
 	@Before

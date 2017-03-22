@@ -13,8 +13,26 @@ import org.junit.Before;
 import org.junit.Test;
 
 public class JPAUtilTest {
+	
+	public static final String CPF_PADRAO = "000.001.002-03";
+	public static final String REGISTRO_PADRAO = "A0001B";
+	public static final String CODIGO_PADRAO = "PTG-001";
 
 	private EntityManager em;
+	
+	public static String getCpfPadrao(){
+		return CPF_PADRAO;
+	}
+	
+	public static String getRegistroPadrao(){
+		return REGISTRO_PADRAO;
+	}
+	
+	public static String getCodigoPadrao(){
+		return CODIGO_PADRAO;
+	}
+	
+	
 	
 	/**
 	 * Retorna uma data no formato Date. Espera uma string formato dd/MM/yyyy
@@ -27,6 +45,24 @@ public class JPAUtilTest {
 		Date ndt;
 		try {
 			ndt = (java.util.Date) formato.parse(data);
+		} catch (ParseException e) {
+			ndt = new Date();
+			//e.printStackTrace();
+		}
+		return ndt;
+	}
+	
+	/**
+	 * Retorna uma data no formato Date. Espera uma string formato dd/MM/yyyy
+	 * @param data
+	 * @return
+	 */
+	public static Date getTipoDateTime(String dataHora) {
+		SimpleDateFormat formato = new SimpleDateFormat("dd/MM/yyyy HH:mm:ss");
+		
+		Date ndt;
+		try {
+			ndt = (java.util.Date) formato.parse(dataHora);
 		} catch (ParseException e) {
 			ndt = new Date();
 			//e.printStackTrace();

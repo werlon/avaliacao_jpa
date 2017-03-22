@@ -14,17 +14,17 @@ import org.junit.Before;
 import org.junit.Test;
 
 import br.edu.faculdadedelta.util.JPAUtil;
+import br.edu.faculdadedelta.util.JPAUtilTest;
 
 public class AlunoTest {
 	
-	private static final String CPF_PADRAO = "000.001.002-03";
 	private EntityManager em;
 	
 	@Test 
 	public void deveSalvarAluno(){
 		Aluno aluno = new Aluno();
 		aluno.setNome("Werlon Guilherme");
-		aluno.setCpf(CPF_PADRAO);
+		aluno.setCpf(JPAUtilTest.CPF_PADRAO);
 		aluno.setIdade(36);
 		aluno.setMatricula("MAT-000000001");
 		
