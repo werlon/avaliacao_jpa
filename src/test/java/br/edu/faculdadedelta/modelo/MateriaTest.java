@@ -163,7 +163,63 @@ public class MateriaTest {
 		
 		assertNull("Não deve achar a matéria", materiaRemovida);
 	}
+	
+	@Test
+	public void deveBuscarMateriaQuePossuiAlunoComCpfComecandoPorJpql(){
+		
+		deveSalvarMateriaComAlunosEProfessorPersistenciaCascata();
+		
+		StringBuilder jpql = new StringBuilder();
+		jpql.append(" SELECT COUNT(m.id) ");
+		jpql.append(" FROM Materia m ");
+		jpql.append(" INNER JOIN m.alunos a ");
+		jpql.append(" WHERE a.cpf LIKE :cpf ");
+		
+		Query query = em.createQuery(jpql.toString());
+		query.setParameter("cpf", "123%");
+		
+		Long qtdMatrias = (Long) query.getSingleResult();
+		
+		assertTrue("Quantidade de matérias deve ser maior que zero", qtdMatrias.intValue() > 0);
+		
+		query = em.createQuery(jpql.toString());
+		query.setParameter("cpf", "555%");
+		
+		qtdMatrias = (Long) query.getSingleResult();
+		
+		assertFalse("Quantidade de matérias não deve ser maior que zero", qtdMatrias.intValue() > 0);
+	}
+	
+	@Test
+	public void deveBuscarMateriaPeloNomeCompletoDoAlunoEPorParteDoNomeDoProfessor(){
+		deveSalvarMateriaComAlunosEProfessorPersistenciaCascata();
+		
+		StringBuilder jpql = new StringBuilder();
+		jpql.append(" SELECT COUNT(m.id) ");
+		jpql.append(" FROM Materia m ");
+		jpql.append(" INNER JOIN m.professor p ");
+		jpql.append(" INNER JOIN m.alunos a ");
+		jpql.append(" WHERE a.nome = :nomea ");
+		jpql.append(" AND p.nome LIKE :nomepro ");
+		
+		Query query = em.createQuery(jpql.toString());
+		query.setParameter("nomea", "Werlon Guilherme");
+		query.setParameter("nomepro", "JO%");
+		
+		Long qtdMatrias = (Long) query.getSingleResult();
+		
+		assertTrue("Quantidade de matérias deve ser maior que zero", qtdMatrias.intValue() > 0);
+		
+		query = em.createQuery(jpql.toString());
+		query.setParameter("nomea", "Werlon");
+		query.setParameter("nomepro", "A%");
+		
+		qtdMatrias = (Long) query.getSingleResult();
+		
+		assertFalse("Quantidade de matérias não deve ser maior que zero", qtdMatrias.intValue() > 0);
+	}
 
+	
 	@Before
 	public void instanciarEntityManager(){
 		em = JPAUtil.INSTANCE.getEntityManager();
