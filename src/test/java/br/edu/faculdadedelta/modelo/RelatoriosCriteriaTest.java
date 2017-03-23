@@ -3,11 +3,16 @@ package br.edu.faculdadedelta.modelo;
 import static org.junit.Assert.*;
 
 import java.util.Date;
+import java.util.List;
 
 import javax.persistence.EntityManager;
 
 import org.hibernate.Criteria;
 import org.hibernate.Session;
+import org.hibernate.criterion.DetachedCriteria;
+import org.hibernate.criterion.Projections;
+import org.hibernate.criterion.Restrictions;
+import org.hibernate.criterion.Subqueries;
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
@@ -35,6 +40,27 @@ private EntityManager em;
 	/**
 	 * Testes para Materia
 	 */
+	@Test
+	public void deveTerMaisDeCincoMateriasPelosProfessoresNaLista(){
+		criarRegistrosParaTeste(10);
+
+		DetachedCriteria detachedCriteria = DetachedCriteria.forClass(Professor.class,"p")
+				.add(Restrictions.in("p.id", 1L,2L,3L,4L,5L,6L,7L,8L,9L,10L))
+				.setProjection(Projections.property("p.nome"));
+		
+		Criteria criteria = createCriteria(Materia.class,"m")
+				.createAlias("m.professor", "p")
+				.add(Subqueries.propertyIn("p.nome", detachedCriteria));
+		
+		@SuppressWarnings("unchecked")
+		List<Materia> materia = criteria
+				.setResultTransformer(Criteria.DISTINCT_ROOT_ENTITY)
+				.list();
+		
+		assertTrue("Verifica se teve pelomenos 1 vendas", materia.size() >= 1);
+		
+		materia.forEach(mat -> assertFalse(mat.getProfessor().isTransient()));
+	}
 	
 	/**
 	 * Testes para Pagamento
@@ -48,9 +74,7 @@ private EntityManager em;
 	 * Testtes para Aluno
 	 */
 	
-	@Test
-	public void criarRegistrosParaTeste(){
-		int quantidade = 3;
+	private void criarRegistrosParaTeste(int quantidade){
 		em.getTransaction().begin();
 		
 		for(int i = 0 ; i < quantidade ; i++){
