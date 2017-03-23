@@ -165,7 +165,7 @@ public class PagamentoTest {
 		
 		Query query = em.createQuery(jpql.toString());
 		query.setParameter("dataInicial", JPAUtilTest.getTipoDateTime("10/01/2017 00:00:00"));
-		query.setParameter("dataFinal", JPAUtilTest.getTipoDateTime("10/02/2017 00:00:00"));
+		query.setParameter("dataFinal", JPAUtilTest.getTipoDateTime("10/08/2017 00:00:00"));
 		
 		Long qtdRegistros = (Long) query.getSingleResult();
 		

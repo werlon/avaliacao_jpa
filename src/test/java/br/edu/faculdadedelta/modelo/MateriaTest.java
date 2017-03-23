@@ -191,7 +191,7 @@ public class MateriaTest {
 	}
 	
 	@Test
-	public void deveBuscarMateriaPeloNomeCompletoDoAlunoEPorParteDoNomeDoProfessor(){
+	public void deveBuscarMateriaPeloNomeCompletoDoAlunoEPorParteDoNomeDoProfessorJpql(){
 		deveSalvarMateriaComAlunosEProfessorPersistenciaCascata();
 		
 		StringBuilder jpql = new StringBuilder();
