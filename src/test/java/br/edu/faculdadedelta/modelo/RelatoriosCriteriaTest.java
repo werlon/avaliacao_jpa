@@ -10,9 +10,11 @@ import javax.persistence.EntityManager;
 import org.hibernate.Criteria;
 import org.hibernate.Session;
 import org.hibernate.criterion.DetachedCriteria;
+import org.hibernate.criterion.ProjectionList;
 import org.hibernate.criterion.Projections;
 import org.hibernate.criterion.Restrictions;
 import org.hibernate.criterion.Subqueries;
+import org.hibernate.transform.Transformers;
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
@@ -60,6 +62,40 @@ private EntityManager em;
 		assertTrue("Verifica se teve pelomenos 1 vendas", materia.size() >= 1);
 		
 		materia.forEach(mat -> assertFalse(mat.getProfessor().isTransient()));
+	}
+	
+	@Test
+	public void deveTerAlunosNaMateria(){
+		criarRegistrosParaTeste(4);
+		
+		ProjectionList projectionList = Projections.projectionList()
+				.add(Projections.property("m.id").as("id"))
+				.add(Projections.property("m.alunos"));
+
+		Criteria criteria = createCriteria(Materia.class, "m")
+				.setProjection(projectionList);
+		
+		@SuppressWarnings("unchecked")
+		List<Materia> materias = criteria
+				.setResultTransformer(Transformers.aliasToBean(Materia.class)) //evida dados repetidos
+				.list();
+		
+		assertTrue("Deve ter de 4 a mais materias ",materias.size() >= 4);
+		
+		materias.forEach(materia -> {
+			assertTrue(materia.getId() != null);
+			assertTrue(materia.getTitulo() == null);
+			Materia mat = em.find(Materia.class, materia.getId());
+			
+			List<Aluno> alunos = mat.getAlunos();
+			assertTrue("Deve ter de 4 a mais alunos ",alunos.size() > 0);
+			
+			alunos.forEach(aluno ->{
+				assertTrue(aluno.getId() != null);
+				assertTrue(aluno.getNome() != null);
+			});
+			
+		});
 	}
 	
 	/**
