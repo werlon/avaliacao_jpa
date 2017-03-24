@@ -10,12 +10,15 @@ import javax.persistence.EntityManager;
 import javax.persistence.Query;
 
 import org.hibernate.Criteria;
+import org.hibernate.FetchMode;
 import org.hibernate.Session;
 import org.hibernate.criterion.DetachedCriteria;
+import org.hibernate.criterion.MatchMode;
 import org.hibernate.criterion.ProjectionList;
 import org.hibernate.criterion.Projections;
 import org.hibernate.criterion.Restrictions;
 import org.hibernate.criterion.Subqueries;
+import org.hibernate.sql.JoinType;
 import org.hibernate.transform.Transformers;
 import org.junit.After;
 import org.junit.AfterClass;
@@ -53,6 +56,7 @@ private EntityManager em;
 				.add(Restrictions.eq("p.registro", JPAUtilTest.REGISTRO_PADRAO+2))
 				.setMaxResults(1);
 		
+		@SuppressWarnings("unchecked")
 		List<Professor> professores = criteria
 				.setResultTransformer(Criteria.DISTINCT_ROOT_ENTITY)
 				.list();
@@ -79,6 +83,7 @@ private EntityManager em;
 		Criteria criteria = createCriteria(Pagamento.class)
 				.add(Restrictions.eq("valor", 300.00)).setMaxResults(1);
 		
+		@SuppressWarnings("unchecked")
 		List<Pagamento> pagamentos = criteria
 				.setResultTransformer(Criteria.DISTINCT_ROOT_ENTITY)
 				.list();
@@ -111,16 +116,54 @@ private EntityManager em;
 		assertTrue("Verifica se o maximo registro ficou maior ou igual a 3",maiorRegistro >= 3L);
 	}
 	
+	@Test
+	public void deveBuscarMateriaPeloProfessor(){
+		List<Aluno> alunos = new ArrayList<>();
+		Professor professor = criarProfessor(1);
+		criarMaterias(professor, alunos, 3);
+		
+		Criteria criteria = createCriteria(Materia.class,"m")
+				.createAlias("m.professor", "p", JoinType.INNER_JOIN)
+				.add(Restrictions.like("p.nome","Pedro",MatchMode.ANYWHERE))
+				.setProjection(Projections.rowCount());
+		
+		Long qtdRegistros = (Long) criteria
+				.setResultTransformer(Criteria.DISTINCT_ROOT_ENTITY)
+				.uniqueResult();
+		
+		assertTrue("Verifica se teve pelomenos 3 matérias com professor", qtdRegistros >= 2);
+	}
+	
+	@Test
+	public void deveBuscarMateriaPeloAluno(){
+		List<Aluno> alunos = new ArrayList<>();
+		alunos.add(criarAluno(1));
+		criarMaterias(criarProfessor(1), alunos, 3);
+		
+		Criteria criteria = createCriteria(Materia.class,"m")
+				.createAlias("m.alunos", "a", JoinType.INNER_JOIN)
+				.setFetchMode("alunos", FetchMode.JOIN)
+				.add(Restrictions.ilike("a.nome","Werlon",MatchMode.ANYWHERE))
+				.setProjection(Projections.rowCount());
+
+		Long qtdRegistros = (Long) criteria
+	.setResultTransformer(Criteria.DISTINCT_ROOT_ENTITY)
+	.uniqueResult();
+
+	assertTrue("Verifica se teve pelomenos 3 matérias com aluno", qtdRegistros >= 1);
+	}
+	
 	/**
 	 * Testtes para Aluno
 	 */
-	
+	@Test
 	public void deveExistirAlunoNaBusca(){
 		criarAlunos(4);
 		Criteria criteria = createCriteria(Aluno.class,"a")
 				.add(Restrictions.eq("a.idade", 12))
 				.setMaxResults(1);
 		
+		@SuppressWarnings("unchecked")
 		List<Aluno> alunos = criteria
 				.setResultTransformer(Criteria.DISTINCT_ROOT_ENTITY)
 				.list();
