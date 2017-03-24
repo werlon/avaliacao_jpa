@@ -79,4 +79,10 @@ public class Materia extends BaseEntity<Long> {
 		return alunos;
 	}
 
+	public void setAlunos(List<Aluno> alunos) {
+		this.alunos = alunos;
+	}
+	
+	
+
 }
