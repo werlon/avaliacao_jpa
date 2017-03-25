@@ -5,10 +5,9 @@ import static org.junit.Assert.*;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
+import java.util.Map;
 
 import javax.persistence.EntityManager;
-import javax.persistence.Query;
-
 import org.hibernate.Criteria;
 import org.hibernate.FetchMode;
 import org.hibernate.Session;
@@ -19,9 +18,7 @@ import org.hibernate.criterion.Projections;
 import org.hibernate.criterion.Restrictions;
 import org.hibernate.criterion.Subqueries;
 import org.hibernate.sql.JoinType;
-import org.hibernate.transform.Transformers;
 import org.junit.After;
-import org.junit.AfterClass;
 import org.junit.Before;
 import org.junit.Test;
 
@@ -30,8 +27,7 @@ import br.edu.faculdadedelta.util.JPAUtilTest;
 
 public class RelatoriosCriteriaTest {
 	
-private EntityManager em;
-	
+	private EntityManager em;
 	
 	private Session getSession(){
 		return (Session) em.getDelegate();
@@ -48,6 +44,7 @@ private EntityManager em;
 	/**
 	 * Testes para Professor
 	 */
+	
 	@Test
 	public void buscarProfessoresPorRegistro(){
 		criarProfessores(3);
@@ -64,14 +61,57 @@ private EntityManager em;
 		Professor pr = professores.get(0);
 		
 		assertFalse("Deve existir professor", pr.isTransient());
+	}
+	
+	@Test
+	public void buscaProfessoresPorParteDoNome(){
+		criarProfessores(3);
 		
+		Criteria criteria = createCriteria(Professor.class)
+				.add(Restrictions.eq("nome", "Pedro 2"))
+				.setMaxResults(1);
+		
+		@SuppressWarnings("unchecked")
+		List<Professor> professores = criteria
+				.setResultTransformer(Criteria.DISTINCT_ROOT_ENTITY)
+				.list();
+		
+		assertFalse("Deve existir professor", professores.get(0).isTransient());
+	}
+	
+	@Test
+	public void listarProfessorComMap(){
+		criarProfessores(5);
+		
+		ProjectionList projectionList = Projections.projectionList()
+				.add(Projections.property("id"))
+				.add(Projections.property("nome"));
+
+		Criteria criteria = createCriteria(Professor.class);
+		criteria.setProjection(projectionList);
+
+		@SuppressWarnings("unchecked")
+		List<Map<String, Object>> professores = criteria
+				.setResultTransformer(Criteria.ALIAS_TO_ENTITY_MAP)
+				.list();
+		
+		assertTrue("Verifica se teve pelomenos 3 produtos", professores.size() >= 5);
+		
+		professores.forEach(map -> {
+			map.forEach((chave, valor) ->{
+				assertTrue("primeiro deve ser string",chave instanceof String);
+				assertTrue("segundo pode ser string ou long",valor instanceof String || valor instanceof Long );
+			});
+			
+		});
 	}
 	
 	/**
 	 * Testes para Pagamento
 	 */
+	
 	@Test
-	public void buscarPagamentoPorProfessor(){
+	public void buscarPagamentoPorValor(){
 		em.getTransaction().begin();
 		for(int i=0; i<3; i++){
 			Professor professor = criarProfessor(i);
@@ -91,11 +131,63 @@ private EntityManager em;
 		Pagamento pg = pagamentos.get(0);
 		
 		assertFalse("Deve ter pagamento", pg.isTransient());
-		
-		
-		
 	}
 	
+	@Test
+	public void buscarPagamentoPorProfessor(){
+		
+		em.getTransaction().begin();
+		for(int i=0; i<3; i++){
+			Professor professor = criarProfessor(i);
+			Pagamento pagamento = criarPagamento(professor, i);
+			em.persist(pagamento);
+		}
+		em.getTransaction().commit();
+		
+		Criteria criteria = createCriteria(Pagamento.class,"pg")
+				.createAlias("pg.professor","pr",JoinType.INNER_JOIN)
+				.add(Restrictions.eq("pr.nome", "Pedro 1")).setMaxResults(1);
+		
+		@SuppressWarnings("unchecked")
+		List<Pagamento> pagamentos = criteria
+				.setResultTransformer(Criteria.DISTINCT_ROOT_ENTITY)
+				.list();
+		
+		assertFalse("Deve ter pagamento", pagamentos.get(0).isTransient());
+	}
+	
+	@Test
+	public void buscarTodosOsPagamentosDeUmProfessor(){
+		Professor professor = criarProfessor(1);
+		
+		em.getTransaction().begin();
+		for(int i=0; i<3; i++){
+			Pagamento pagamento = criarPagamento(professor, i);
+			em.persist(pagamento);
+		}
+		em.getTransaction().commit();
+		
+		ProjectionList projectionList = Projections.projectionList()
+				.add(Projections.property("p.id").as("id"))
+				.add(Projections.property("p.valor").as("valor"));
+		
+		Criteria criteria = createCriteria(Pagamento.class, "p")
+				.createAlias("p.professor", "pr",JoinType.INNER_JOIN)
+				.setProjection(projectionList);
+		
+		@SuppressWarnings("unchecked")
+		List<Object[]> pagamentos = criteria
+				.setResultTransformer(Criteria.PROJECTION)
+				.add(Restrictions.eq("pr.nome", "Pedro 1"))
+				.list();
+		
+		assertTrue("Verifica se teve pelomenos 3 produtos", pagamentos.size() >= 1);
+		
+		pagamentos.forEach(pagamento -> {
+			assertTrue("primeiro deve ser id Long",pagamento[0] instanceof Long);
+			assertTrue("segundo deve ser Valor Double",pagamento[1] instanceof Double);
+		});
+	}
 	
 	/**
 	 * Testes para Materia
@@ -138,7 +230,7 @@ private EntityManager em;
 	public void deveBuscarMateriaPeloAluno(){
 		List<Aluno> alunos = new ArrayList<>();
 		alunos.add(criarAluno(1));
-		criarMaterias(criarProfessor(1), alunos, 3);
+		criarMaterias(criarProfessor(1), alunos, 4);
 		
 		Criteria criteria = createCriteria(Materia.class,"m")
 				.createAlias("m.alunos", "a", JoinType.INNER_JOIN)
@@ -147,10 +239,11 @@ private EntityManager em;
 				.setProjection(Projections.rowCount());
 
 		Long qtdRegistros = (Long) criteria
-	.setResultTransformer(Criteria.DISTINCT_ROOT_ENTITY)
-	.uniqueResult();
+				.setResultTransformer(Criteria.DISTINCT_ROOT_ENTITY)
+				.uniqueResult();
 
-	assertTrue("Verifica se teve pelomenos 3 matérias com aluno", qtdRegistros >= 1);
+		assertEquals("Deve ter 1 registro", 4, qtdRegistros.intValue());
+		assertTrue("Verifica se teve pelomenos 3 matérias com aluno", qtdRegistros >= 4);
 	}
 	
 	/**
@@ -173,6 +266,41 @@ private EntityManager em;
 		assertFalse("Deve existir aluno", al.isTransient());
 	}
 	
+	@Test
+	public void buscarAlunosRestringindoPorIdadeSubquery(){
+		criarAlunos(10);
+		
+		DetachedCriteria detachedCriteria = DetachedCriteria.forClass(Aluno.class,"a")
+				.add(Restrictions.in("a.idade", 11,12,13,14,15,16,17,18,19,20))
+				.setProjection(Projections.property("a.nome"));
+		
+		Criteria criteria = createCriteria(Aluno.class,"al")
+				.add(Subqueries.propertyIn("al.nome", detachedCriteria));
+		
+		@SuppressWarnings("unchecked")
+		List<Aluno> alunos = criteria
+				.setResultTransformer(Criteria.DISTINCT_ROOT_ENTITY)
+				.list();
+		
+		assertTrue("Verifica se teve pelomenos 1 aluno", alunos.size() >= 1);
+		
+		alunos.forEach(aluno -> assertFalse(aluno.isTransient()));
+	}
+	
+	@Test
+	public void buscarAlunosRestringindoPorDataNascimento(){
+		criarAlunos(10);
+		
+		Criteria criteria = createCriteria(Aluno.class, "a")
+				.add(Restrictions.between("a.idade", 10, 20))
+				.setProjection(Projections.rowCount());
+
+		Long qtdRegistros = (Long) criteria
+				.setResultTransformer(Criteria.DISTINCT_ROOT_ENTITY)
+				.uniqueResult();
+		
+		assertTrue("Verifica se teve pelomenos 3 alunos", qtdRegistros >= 3);
+	}
 	
 	private Aluno criarAluno(int i){
 		int numero = 100 + i;
@@ -190,7 +318,6 @@ private EntityManager em;
 	private void criarAlunos(int quantidade){
 		em.getTransaction().begin();
 		for(int i = 0 ; i < quantidade ; i++){
-			
 			Aluno novoAluno = criarAluno(i);
 			em.persist(novoAluno);
 		}
@@ -251,7 +378,6 @@ private EntityManager em;
 		em.getTransaction().commit();
 	}
 	
-	
 	private void criarRegistrosParaTeste(int quantidade){
 		em.getTransaction().begin();
 		
@@ -271,7 +397,6 @@ private EntityManager em;
 				novoAluno.setCpf("001.002."+numero+"-00");
 				novoAluno.setDataNascimento(JPAUtilTest.getTipoDate(ano+"/02/01"));
 				novoAluno.setIdade(idade);
-				
 				
 				materia.getAlunos().add(novoAluno);
 				
